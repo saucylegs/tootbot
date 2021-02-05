@@ -1,6 +1,6 @@
 import praw
 import json
-import tweepy
+import twitter
 import time
 import os
 import csv
@@ -118,18 +118,13 @@ def make_post(post_dict):
                 # Make sure the post contains media, if MEDIA_POSTS_ONLY in config is set to True
                 if (((MEDIA_POSTS_ONLY is True) and media_file) or (MEDIA_POSTS_ONLY is False)):
                     try:
-                        auth = tweepy.OAuthHandler(
-                            CONSUMER_KEY, CONSUMER_SECRET)
-                        auth.set_access_token(
-                            ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-                        twitter = tweepy.API(auth)
+                        api = twitter.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=ACCESS_TOKEN, access_token_secret=ACCESS_TOKEN_SECRET)
                         # Generate post caption
                         caption = get_twitter_caption(post_dict[post])
                         # Post the tweet
                         if (media_file):
-                            print(
-                                '[ OK ] Posting this on Twitter with media attachment:', caption)
-                            tweet = twitter.update_with_media(filename=media_file, status=caption)
+                            print('[ OK ] Posting this on Twitter with media attachment:', caption)
+                            tweet = api.PostUpdate(caption, media=media_file)
                             # Clean up media file
                             try:
                                 os.remove(media_file)
@@ -138,7 +133,7 @@ def make_post(post_dict):
                                 print('[EROR] Error while deleting media file:', str(e))
                         else:
                             print('[ OK ] Posting this on Twitter:',caption)
-                            tweet = twitter.update_status(status=caption)
+                            tweet = api.PostUpdate(caption)
                         # Log the tweet
                         log_post(post_id, 'https://twitter.com/' + twitter_username + '/status/' + tweet.id_str + '/')
                     except BaseException as e:
@@ -200,13 +195,13 @@ def make_post(post_dict):
 
 # Check for updates
 try:
-    with urllib.request.urlopen("https://raw.githubusercontent.com/corbindavenport/tootbot/update-check/current-version.txt") as url:
+    with urllib.request.urlopen("https://raw.githubusercontent.com/saucylegs/tootbot/update-check/current-version.txt") as url:
         s = url.read()
         new_version = s.decode("utf-8").rstrip()
         current_version = 2.6  # Current version of script
         if (current_version < float(new_version)):
             print('[WARN] A new version of Tootbot (' + str(new_version) + ') is available! (you have ' + str(current_version) + ')')
-            print('[WARN] Get the latest update from here: https://github.com/corbindavenport/tootbot/releases')
+            print('[WARN] Get the latest update from here: https://github.com/saucylegs/tootbot/releases')
         else:
             print('[ OK ] You have the latest version of Tootbot (' + str(current_version) + ')')
     url.close()
@@ -319,12 +314,12 @@ if POST_TO_TWITTER is True:
         CONSUMER_SECRET = twitter_config['Twitter']['ConsumerSecret']
         try:
             # Make sure authentication is working
-            auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-            auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-            twitter = tweepy.API(auth)
-            twitter_username = twitter.me().screen_name
-            print('[ OK ] Sucessfully authenticated on Twitter as @' +
-                  twitter_username)
+            api = twitter.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=ACCESS_TOKEN, access_token_secret=ACCESS_TOKEN_SECRET)
+            twitter_username = api.VerifyCredentials().screen_name
+            if twitter_username:
+                print('[ OK ] Sucessfully authenticated on Twitter as @' + twitter_username)
+            else:
+                raise BaseException('Authentication likely failed. Twitter did not return a user when asked to verify authentication.')
         except BaseException as e:
             print('[EROR] Error while logging into Twitter:', str(e))
             print('[EROR] Tootbot cannot continue, now shutting down')
@@ -344,12 +339,12 @@ if POST_TO_TWITTER is True:
         print('[ OK ] Attempting to log in to Twitter...')
         try:
             # Make sure authentication is working
-            auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-            auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-            twitter = tweepy.API(auth)
-            twitter_username = twitter.me().screen_name
-            print('[ OK ] Sucessfully authenticated on Twitter as @' +
-                  twitter_username)
+            api = twitter.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=ACCESS_TOKEN, access_token_secret=ACCESS_TOKEN_SECRET)
+            twitter_username = api.VerifyCredentials().screen_name
+            if twitter_username:
+                print('[ OK ] Sucessfully authenticated on Twitter as @' + twitter_username)
+            else:
+                raise BaseException('Authentication likely failed. Twitter did not return a user when asked to verify authentication.')
             # It worked, so save the keys to a file
             twitter_config = configparser.ConfigParser()
             twitter_config['Twitter'] = {
@@ -378,7 +373,7 @@ if MASTODON_INSTANCE_DOMAIN:
         try:
             Mastodon.create_app(
                 'Tootbot',
-                website='https://github.com/corbindavenport/tootbot',
+                website='https://github.com/saucylegs/tootbot',
                 api_base_url='https://' + MASTODON_INSTANCE_DOMAIN,
                 to_file='mastodon.secret'
             )
@@ -424,7 +419,7 @@ if (os.name == 'nt'):
                       masto_username + '@' + MASTODON_INSTANCE_DOMAIN + ' - Tootbot')
         elif POST_TO_TWITTER:
             # Set title with just Twitter username
-            twitter_username = twitter.me().screen_name
+            twitter_username = api.VerifyCredentials().screen_name
             os.system('title ' + '@' + twitter_username + ' - Tootbot')
         elif MASTODON_INSTANCE_DOMAIN:
             # Set title with just Mastodon username
