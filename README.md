@@ -1,10 +1,10 @@
 # Tootbot
 
-**I am no longer actively developing Tootbot, and no bug fixes or new features will be implemented. There a fork developed by Mark Burgunder [here](https://gitlab.com/marvin8/tootbot), with fixes to Gfycat integration and and other changes.**
+This is fork of [Corbin Davenport's Tootbot](https://github.com/corbindavenport/tootbot), which is no longer in development. This fork allows the bot to upload videos to Twitter, which was not possible in his version.
+
+----------
 
 This is a Python bot that looks up posts from specified subreddits and automatically posts them on Twitter and/or [Mastodon](https://joinmastodon.org/). It is based on [reddit-twitter-bot](https://github.com/rhiever/reddit-twitter-bot). Tootbot is now used by [a wide variety of social media accounts](https://github.com/corbindavenport/tootbot/wiki/Accounts-using-Tootbot).
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 **Features:**
 
@@ -15,7 +15,7 @@ This is a Python bot that looks up posts from specified subreddits and automatic
 * NSFW content, spoilers, and self-posts can be filtered
 * Multiple subreddits can be monitored at once
 
-Tootbot uses the [tweepy](https://github.com/tweepy/tweepy), [PRAW](https://praw.readthedocs.io/en/latest/), [py-gfycat](https://github.com/ankeshanand/py-gfycat), [imgurpython](https://github.com/Imgur/imgurpython), [Pillow](https://github.com/python-pillow/Pillow), and [Mastodon.py](https://github.com/halcy/Mastodon.py) libraries. The Heroku version also uses the [redis-py](https://github.com/andymccurdy/redis-py) library.
+Tootbot uses the [python-twitter](https://github.com/bear/python-twitter), [youtube-dl](https://github.com/ytdl-org/youtube-dl), [PRAW](https://praw.readthedocs.io/en/latest/), [py-gfycat](https://github.com/ankeshanand/py-gfycat), [imgurpython](https://github.com/Imgur/imgurpython), [Pillow](https://github.com/python-pillow/Pillow), and [Mastodon.py](https://github.com/halcy/Mastodon.py) libraries. youtube-dl also requires [FFmpeg](https://ffmpeg.org/download.html) to be installed and usable from the command line.
 
 ## Disclaimer
 
@@ -23,4 +23,4 @@ The developers of Tootbot hold no liability for what you do with this script or 
 
 ## Setup and usage
 
-For instructions on setting up and using Tootbot, please visit [the wiki](https://github.com/corbindavenport/tootbot/wiki).
+I'll make setup instructions later lol
