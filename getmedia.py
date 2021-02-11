@@ -83,7 +83,7 @@ def get_media(img_url, IMGUR_CLIENT, IMGUR_CLIENT_SECRET):
             'forcefilename': True,
             'logger': ytdlLogger()
         }
-        print("[ OK ] Downloading video via youtube-dl...")
+        print("[ OK ] Downloading video at url " + img_url + " via youtube-dl...")
         with youtube_dl.YoutubeDL(ytdl_opts) as ytdl:
             ytdl.download([img_url])
             print("[ OK ] File downloaded to " + fileouts[0])

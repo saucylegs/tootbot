@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import praw
 import json
 import twitter
@@ -140,6 +142,12 @@ def make_post(post_dict):
                         print('[EROR] Error while posting tweet:', str(e))
                         # Log the post anyways
                         log_post(post_id, 'Error while posting tweet: ' + str(e))
+                        # Clean up media file
+                        try:
+                            os.remove(media_file)
+                            print('[ OK ] Deleted media file at', media_file)
+                        except BaseException as e:
+                            print('[EROR] Error while deleting media file:', str(e))
                 else:
                     print('[WARN] Twitter: Skipping', post_id, 'because non-media posts are disabled or the media file was not found')
                     # Log the post anyways
