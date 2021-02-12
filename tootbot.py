@@ -126,7 +126,9 @@ def make_post(post_dict):
                         # Post the tweet
                         if (media_file):
                             print('[ OK ] Posting this on Twitter with media attachment:', caption)
-                            tweet = api.PostUpdate(caption, media=media_file)
+                            # Chunked upload of media
+                            upload = api.UploadMediaChunked(media_file)
+                            tweet = api.PostUpdate(caption, media=upload)
                             # Clean up media file
                             try:
                                 os.remove(media_file)
